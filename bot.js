@@ -62,7 +62,6 @@ search(args, opts, async function(err, results) {
 
 	  return undefined;
   const dispatcher = connection.playStream(ytdl(`${results.map(r => r.link)}`)).on('end', () => {
-	  voiceChannel.leave();
   });
   dispatcher.setVolumeLogarithmic(5 / 5)
 });
@@ -108,7 +107,6 @@ search(args, opts, async function(err, results) {
 function play(guild, song, message) {
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
-		serverQueue.voiceChannel.leave();
 		queue.delete(guild.id);
 		return;
 	}
