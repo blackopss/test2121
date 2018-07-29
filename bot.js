@@ -17,10 +17,10 @@ client.on('message', async message => {
 	const serverQueue = queue.get(message.guild.id)
 	if (message.content.startsWith(`${prefix}play`)) {
 		const voiceChannel = message.member.voiceChannel;
-		if (!voiceChannel) return message.reply('You Need To Be In A Voice Channel To Do This Command');
+		if (!voiceChannel) return message.reply('**:microphone:يجب عليك التواجد بغرفة صوتية اولا**');
 		const per = voiceChannel.permissionsFor(message.client.user);
-		if (!per.has('CONNECT')) return message.reply('I Don\'t Have Permission `Connect` To Join The Channel')
-		if (!per.has('SPEAK')) return message.reply('I Don\'t Have Permission `SPEAK` To Speak In The Channel');
+		if (!per.has('CONNECT')) return message.reply('**:cold_sweat:لا يتوآجد لدي صلاحية للدخول بهذآ الروم**')
+		if (!per.has('SPEAK')) return message.reply('**:zipper_mouth:لا يتوآجد لدي صلاحية للتكلم بهذآ الروم**');
 		var search = require('youtube-search');
  
 var opts = {
@@ -57,44 +57,47 @@ search(args, opts, async function(err, results) {
 		  }
 	  } else {
 		  serverQueue.songs.push(song);
-		  return message.reply(`**${song.title}** Has Been Added To The Queue`)
+		  return message.reply(`**${song.title}** :arrow_forward: تم الإضآفة إلى قأئمة التشغيل`)
 	  }
 
 	  return undefined;
   const dispatcher = connection.playStream(ytdl(`${results.map(r => r.link)}`)).on('end', () => {
+	  voiceChannel.leave();
   });
   dispatcher.setVolumeLogarithmic(5 / 5)
 });
 	} else if (message.content.startsWith(`${prefix}stop`)) {
-		if (!message.member.voiceChannel) return message.reply('You Must Be In A Voice Channel')
-		if (!serverQueue) return message.reply('There Is Nothing Playing Now');
+		if (!message.member.voiceChannel) return message.reply(':microphone:يجب عليك التواجد بغرفة صوتية اولا')
+		if (!serverQueue) return message.reply('**:stop_button: لا يوجد شيء شغآل**');
 		serverQueue.songs = [];
 		serverQueue.connection.dispatcher.end('2');
 		return undefined;
 	} else if (message.content.startsWith(`${prefix}skip`)) {
-		if (!message.member.voiceChannel) return message.reply('You Must Be In A Voice Channel')
-		if (!serverQueue) return message.reply('There Is Nothing Playing Now');
+		if (!message.member.voiceChannel) return message.reply('**:microphone:يجب عليك التواجد بغرفة صوتية اولا**')
+		if (!serverQueue) return message.reply('**:stop_button: لا يوجد شيء شغآل**');
 		serverQueue.connection.dispatcher.end('1');
 		return undefined;
 	} else if (message.content.startsWith(`${prefix}vol`) || message.content.startsWith(`${prefix}volume`)) {
 		args = message.content.split(" ");
-		if (!message.member.voiceChannel) return message.reply('You Must Be In A Voice Channel')
-		if (!serverQueue) return message.reply('There Is Nothing Playing Now');
+		if (!message.member.voiceChannel) return message.reply('**:microphone:يجب عليك التواجد بغرفة صوتية اولا**')
+		if (!serverQueue) return message.reply('**:stop_button: لا يوجد شيء شغآل**');
 		if (!args[1]) return message.reply('Current Volume Now ' + serverQueue.volume);
 		if (args[1] > 100) return;
 		if (args[1] < 1) return;
 		serverQueue.volume = args[1]
 		serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 100);
+		return msg.channel.send(`:speaker: تم تغير الصوت الي **${args[1]}**`);
+
 		return undefined;
 	} else if (message.content.startsWith(`${prefix}resume`)) {
-		if (!message.member.voiceChannel) return message.reply('You Must Be In A Voice Channel')
-		if (!serverQueue) return message.reply('There Is Nothing Playing Now');
+		if (!message.member.voiceChannel) return message.reply('**:microphone:يجب عليك التواجد بغرفة صوتية اولا**')
+		if (!serverQueue) return message.reply('**:stop_button: لا يوجد شيء شغآل**');
 		serverQueue.playing = true;
 		serverQueue.connection.dispatcher.resume();
 		message.reply('Music Resumed ▶')
 	} else if (message.content.startsWith(`${prefix}pause`)){
-		if (!message.member.voiceChannel) return message.reply('You Must Be In A Voice Channel')
-		if (!serverQueue) return message.reply('There Is Nothing Playing Now');
+		if (!message.member.voiceChannel) return message.reply('**:microphone:يجب عليك التواجد بغرفة صوتية اولا**')
+		if (!serverQueue) return message.reply('**:stop_button: لا يوجد شيء شغآل**');
 		serverQueue.playing = false;
 		serverQueue.connection.dispatcher.pause();
 		message.reply('Music Paused ⏸')
@@ -105,6 +108,7 @@ search(args, opts, async function(err, results) {
 function play(guild, song, message) {
 	const serverQueue = queue.get(guild.id);
 	if (!song) {
+		serverQueue.voiceChannel.leave();
 		queue.delete(guild.id);
 		return;
 	}
@@ -115,7 +119,7 @@ function play(guild, song, message) {
 		play(guild, serverQueue.songs[0])
 	});
 	dispatcher.setVolumeLogarithmic(5 / 5);
-	message.reply(`Now Playing : **${song.title}**`)
+	message.reply(`**Now Playing** : **${song.title}**`)
 }
 
 client.login(process.env.BOT_TOKEN);
