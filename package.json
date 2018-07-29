@@ -1,0 +1,21 @@
+{
+  "name": "Test",
+  "description": "Test",
+  "version": "0.0.0",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+   "discord.js": "^11.3.2",
+    "node-opus": "^0.2.7",
+    "opusscript": "0.0.6",
+    "request": "^2.85.0",
+    "youtube-info": "^1.2.0",
+    "ytdl-core": "^0.20.2",
+     "ffmpeg": "0.0.4",
+    "ffmpeg-binaries": "^3.2.2-3",
+    "get-youtube-id": "^1.0.0",
+    "simple-youtube-api": "^5.0.2"
+  }
+}
