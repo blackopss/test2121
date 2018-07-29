@@ -117,3 +117,5 @@ function play(guild, song, message) {
 	dispatcher.setVolumeLogarithmic(5 / 5);
 	message.reply(`Now Playing : **${song.title}**`)
 }
+
+client.login(process.env.BOT_TOKEN);
